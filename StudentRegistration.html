@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Student Registration</title>
+    <style>
+        body {
+        font-family: Arial, sans-serif;
+        background: #f4f4f4;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        }
+        form {
+        background: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        width: 300px;
+        }
+        label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+        }
+        input {
+        width: 95%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 2px solid #ccc;
+        border-radius: 4px;
+        }
+        input:invalid {
+        border-color: red;
+        }
+        input:valid {
+        border-color: green
+        }
+        button {
+        float: right;
+        width: 50%;
+        padding: 10px;
+        background: blue;
+        color: white;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <form>
+        <label for="name">Full Name:</label>
+        <input type="text" id="name" name="name" required pattern="[A-Za-z\s]{9,50}" title="Must contain 9-50 letters">
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+        <label for="age">Age:</label>
+        <input type="number" id="age" name="age" required min="16" max="100">
+        <button type="submit">Register</button>
+        </form>
+        </body>
+</html>

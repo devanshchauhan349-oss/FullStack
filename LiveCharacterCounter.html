@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Character Counter</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 16px;
+            resize: vertical;
+            min-height: 150px;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .counter-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            padding: 0 5px;
+        }
+
+        .counter-text {
+            font-size: 14px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .counter-number {
+            font-size: 18px;
+            font-weight: bold;
+            color: #667eea;
+            transition: color 0.3s ease;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background-color: #e0e0e0;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border-radius: 3px;
+            transition: width 0.2s ease;
+            width: 0%;
+        }
+
+        .warning {
+            color: #ff6b6b;
+        }
+
+        .limit-reached {
+            border-color: #ff6b6b !important;
+            box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1) !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Live Character Counter</h1>
+        <p class="subtitle">Type in the text area to see the character count update in real-time</p>
+
+        <div class="input-group">
+            <textarea id="textArea" placeholder="Start typing..."></textarea>
+            <div class="counter-info">
+                <span class="counter-text">Characters used:</span>
+                <span class="counter-number"><span id="charCount">0</span> / 500</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const textArea = document.getElementById('textArea');
+        const charCount = document.getElementById('charCount');
+        const progressFill = document.getElementById('progressFill');
+        const inputGroup = document.querySelector('.input-group');
+        const maxCharacters = 500;
+
+        textArea.addEventListener('input', updateCounter);
+
+        function updateCounter() {
+            const currentLength = textArea.value.length;
+            const percentage = (currentLength / maxCharacters) * 100;
+
+            charCount.textContent = currentLength;
+            progressFill.style.width = percentage + '%';
+
+            if (currentLength >= maxCharacters) {
+                textArea.classList.add('limit-reached');
+                charCount.classList.add('warning');
+                textArea.value = textArea.value.substring(0, maxCharacters);
+            } else {
+                textArea.classList.remove('limit-reached');
+                charCount.classList.remove('warning');
+            }
+        }
+    </script>
+</body>
+</html>

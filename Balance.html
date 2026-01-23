@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Responsive Banking Interface</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f4f4f4;
+    }
+
+    .container {
+      max-width: 400px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .balance {
+      font-size: 1.5em;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: row;
+      gap: 10px;
+    }
+
+    input[type="number"] {
+      flex: 1;
+      padding: 10px;
+      font-size: 1em;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    button {
+      flex: 1;
+      padding: 10px;
+      font-size: 1em;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .deposit {
+      background-color: #007bff;
+      color: white;
+    }
+
+    .withdraw {
+      background-color: #dc3545;
+      color: white;
+    }
+
+    .success {
+      color: green;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .error {
+      color: red;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    @media (max-width: 600px) {
+      .input-group, .buttons {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="balance" id="balance">Balance: $1000</div>
+    <div class="input-group">
+      <input type="number" id="amount" placeholder="Enter amount">
+    </div>
+    <div class="buttons">
+      <button class="deposit" onclick="deposit()">Deposit</button>
+      <button class="withdraw" onclick="withdraw()">Withdraw</button>
+    </div>
+    <div class="error" id="error"></div>
+    <div class="success" id="success"></div> <!-- ✅ Added success container -->
+  </div>
+
+  <script>
+    let balance = 1000;
+
+    function updateBalance() {
+      document.getElementById('balance').textContent = `Balance: $${balance}`;
+    }
+
+    function showError(message) {
+      document.getElementById('error').textContent = message;
+      clearSuccess(); // hide success when showing error
+    }
+
+    function showSuccess(message) {
+      document.getElementById('success').textContent = message;
+      clearError(); // hide error when showing success
+    }
+
+    function clearError() {
+      document.getElementById('error').textContent = '';
+    }
+
+    function clearSuccess() {
+      document.getElementById('success').textContent = '';
+    }
+
+    function getAmount() {
+      const value = parseFloat(document.getElementById('amount').value);
+      return isNaN(value) || value <= 0 ? null : value;
+    }
+
+    function deposit() {
+      const amount = getAmount();
+      if (amount === null) {
+        showError('Invalid amount!');
+        return;
+      }
+      balance += amount;
+      updateBalance();
+      document.getElementById('amount').value = '';
+      showSuccess('Deposit successful!');
+    }
+
+    function withdraw() {
+      const amount = getAmount();
+      if (amount === null) {
+        showError('Invalid amount!');
+        return;
+      }
+      if (amount > balance) {
+        showError('Insufficient funds!');
+        return;
+      }
+      balance -= amount;
+      updateBalance();
+      document.getElementById('amount').value = '';
+      showSuccess('Withdrawal successful!');
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard</title>
+  <style>
+    :root {
+      --bg-color: #ffffff;
+      --text-color: #000000;
+      --accent-color: #f0f0f0;
+    }
+
+    body.dark {
+      --bg-color: #121212;
+      --text-color: #ffffff;
+      --accent-color: #1e1e1e;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+    }
+
+    .dashboard {
+      display: grid;
+      grid-template-areas:
+        "nav analytics analytics"
+        "nav users settings";
+      grid-template-columns: 1fr 2fr 2fr;
+      grid-template-rows: auto auto;
+      gap: 1rem;
+      padding: 1rem;
+    }
+
+    .nav {
+      grid-area: nav;
+      background: var(--accent-color);
+      padding: 1rem;
+    }
+
+    .analytics {
+      grid-area: analytics;
+      background: var(--accent-color);
+      padding: 1rem;
+    }
+
+    .users {
+      grid-area: users;
+      background: var(--accent-color);
+      padding: 1rem;
+    }
+
+    .settings {
+      grid-area: settings;
+      background: var(--accent-color);
+      padding: 1rem;
+    }
+
+    #themeToggle {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      background: var(--accent-color);
+      border: none;
+      font-size: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard">
+    <nav class="nav">Navigation</nav>
+    <section class="analytics">Analytics</section>
+    <section class="users">Users</section>
+    <section class="settings">Settings</section>
+    <button id="themeToggle">🌞 Light Mode</button>
+  </div>
+
+  <script>
+    const toggleBtn = document.getElementById('themeToggle');
+    const body = document.body;
+
+    function setTheme(theme) {
+      body.classList.toggle('dark', theme === 'dark');
+      toggleBtn.textContent = theme === 'dark' ? '🌜 Dark Mode' : '🌞 Light Mode';
+      localStorage.setItem('theme', theme);
+    }
+
+    toggleBtn.addEventListener('click', () => {
+      const newTheme = body.classList.contains('dark') ? 'light' : 'dark';
+      setTheme(newTheme);
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedTheme = localStorage.getItem('theme') || 'light';
+      setTheme(savedTheme);
+    });
+  </script>
+</body>
+</html>

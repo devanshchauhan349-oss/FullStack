@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Product Filter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        .filter {
+            margin-bottom: 20px;
+        }
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            transition: all 0.3s ease;
+        }
+        .product-card {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+        .product-card:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="filter">
+        <label for="category">Filter by Category:</label>
+        <select id="category" onchange="filterProducts()">
+            <option value="all">All</option>
+            <option value="electronics">Electronics</option>
+            <option value="clothing">Clothing</option>
+            <option value="accessories">Accessories</option>
+        </select>
+    </div>
+
+    <div id="productGrid" class="product-grid"></div>
+
+    <script>
+        const products = [
+            { id: 1, name: 'Laptop', category: 'electronics' },
+            { id: 2, name: 'T-Shirt', category: 'clothing' },
+            { id: 3, name: 'Headphones', category: 'electronics' },
+            { id: 4, name: 'Jeans', category: 'clothing' },
+            { id: 5, name: 'Watch', category: 'accessories' },
+        ];
+
+        function filterProducts() {
+            const category = document.getElementById('category').value;
+            const filteredProducts = category === 'all' ? products : products.filter(product => product.category === category);
+            displayProducts(filteredProducts);
+        }
+
+        function displayProducts(products) {
+            const productGrid = document.getElementById('productGrid');
+            productGrid.innerHTML = '';
+            products.forEach(product => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.innerHTML = `<h3>${product.name}</h3>`;
+                productGrid.appendChild(card);
+            });
+        }
+
+        // Initial display
+        displayProducts(products);
+    </script>
+
+</body>
+</html>
