@@ -72,13 +72,11 @@
 
         const shapes = document.getElementById('shapes');
 
-        // add circle at given coordinates (clamped to boundary)
         function addCircleAt(x, y) {
             const r = Math.max(1, parseInt(brushSize.value, 10) * 2);
             const svgW = parseInt(svg.getAttribute('width'), 10) || svg.clientWidth;
             const svgH = parseInt(svg.getAttribute('height'), 10) || svg.clientHeight;
 
-            // clamp so circle stays fully inside boundary
             const cx = Math.max(r, Math.min(x, svgW - r));
             const cy = Math.max(r, Math.min(y, svgH - r));
 
@@ -92,18 +90,14 @@
             circleCount += 1;
             circleCountEl.textContent = circleCount;
         }
-
-        // throttle creation to avoid extreme number of circles
         let lastTime = 0;
-        const throttleMs = 40; // create at most ~25 circles/sec
+        const throttleMs = 40;
 
         svg.addEventListener('mousedown', (e) => {
-            if (e.button === 0) { // left mouse button
+            if (e.button === 0) {
                 isDrawing = true;
             }
         });
-
-        // stop drawing when mouse released anywhere
         window.addEventListener('mouseup', () => { isDrawing = false; });
 
         svg.addEventListener('mousemove', (e) => {
@@ -117,8 +111,6 @@
             const y = Math.round(e.clientY - rect.top);
             addCircleAt(x, y);
         });
-
-        // add circle button (also allows manual circle addition)
         addCircleBtn.addEventListener('click', () => {
             const svgW = parseInt(svg.getAttribute('width'), 10) || svg.clientWidth;
             const svgH = parseInt(svg.getAttribute('height'), 10) || svg.clientHeight;
@@ -134,7 +126,6 @@
         downloadBtn.addEventListener('click', () => {
             const serializer = new XMLSerializer();
             const svgClone = svg.cloneNode(true);
-            // ensure namespace present
             svgClone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
             const source = serializer.serializeToString(svgClone);
             const blob = new Blob([source], { type: 'image/svg+xml;charset=utf-8' });
