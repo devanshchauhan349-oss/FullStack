@@ -48,71 +48,92 @@
         <label>Color: <input type="color" id="colorPicker" value="#000000"></label>
         <label>Size: <input type="range" id="brushSize" min="1" max="20" value="3"></label>
         <button id="clearBtn">Clear</button>
+        <button id="addCircleBtn">Add Circle</button>
+        <span style="margin-left:10px; font-weight:bold">Circles: <span id="circleCount">0</span></span>
         <button id="downloadBtn">Download</button>
     </div>
 
-    <canvas id="canvas"></canvas>
+    <svg id="svgCanvas" xmlns="http://www.w3.org/2000/svg" width="800" height="600"></svg>
 
     <script>
-        const canvas = document.getElementById('canvas');
-        const ctx = canvas.getContext('2d');
+        const svg = document.getElementById('svgCanvas');
         const colorPicker = document.getElementById('colorPicker');
         const brushSize = document.getElementById('brushSize');
         const clearBtn = document.getElementById('clearBtn');
         const downloadBtn = document.getElementById('downloadBtn');
+        const addCircleBtn = document.getElementById('addCircleBtn');
+        const circleCountEl = document.getElementById('circleCount');
 
-        canvas.width = 800;
-        canvas.height = 600;
-
+        let circleCount = 0;
         let isDrawing = false;
-        let lastX = 0;
-        let lastY = 0;
 
-        canvas.addEventListener('mousedown', (e) => {
-            isDrawing = true;
-            const rect = canvas.getBoundingClientRect();
-            lastX = e.clientX - rect.left;
-            lastY = e.clientY - rect.top;
+        // add circle at given coordinates
+        function addCircleAt(x, y) {
+            const r = Math.max(1, parseInt(brushSize.value, 10) * 2);
+            const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            circle.setAttribute('cx', x);
+            circle.setAttribute('cy', y);
+            circle.setAttribute('r', r);
+            circle.setAttribute('fill', colorPicker.value);
+            svg.appendChild(circle);
+
+            circleCount += 1;
+            circleCountEl.textContent = circleCount;
+        }
+
+        // throttle creation to avoid extreme number of circles
+        let lastTime = 0;
+        const throttleMs = 40; // create at most ~25 circles/sec
+
+        svg.addEventListener('mousedown', (e) => {
+            if (e.button === 0) { // left mouse button
+                isDrawing = true;
+            }
         });
 
-        canvas.addEventListener('mousemove', (e) => {
+        // stop drawing when mouse released anywhere
+        window.addEventListener('mouseup', () => { isDrawing = false; });
+
+        svg.addEventListener('mousemove', (e) => {
             if (!isDrawing) return;
-            
-            const rect = canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
+            const now = Date.now();
+            if (now - lastTime < throttleMs) return;
+            lastTime = now;
 
-            ctx.strokeStyle = colorPicker.value;
-            ctx.lineWidth = brushSize.value;
-            ctx.lineCap = 'round';
-            ctx.lineJoin = 'round';
-
-            ctx.beginPath();
-            ctx.moveTo(lastX, lastY);
-            ctx.lineTo(x, y);
-            ctx.stroke();
-
-            lastX = x;
-            lastY = y;
+            const rect = svg.getBoundingClientRect();
+            const x = Math.round(e.clientX - rect.left);
+            const y = Math.round(e.clientY - rect.top);
+            addCircleAt(x, y);
         });
 
-        canvas.addEventListener('mouseup', () => {
-            isDrawing = false;
-        });
-
-        canvas.addEventListener('mouseout', () => {
-            isDrawing = false;
+        // add circle button (also allows manual circle addition)
+        addCircleBtn.addEventListener('click', () => {
+            // add at center
+            addCircleAt(Math.round(svg.clientWidth / 2), Math.round(svg.clientHeight / 2));
         });
 
         clearBtn.addEventListener('click', () => {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            while (svg.firstChild) svg.removeChild(svg.firstChild);
+            circleCount = 0;
+            circleCountEl.textContent = circleCount;
         });
 
         downloadBtn.addEventListener('click', () => {
+            const serializer = new XMLSerializer();
+            const svgClone = svg.cloneNode(true);
+            // ensure namespace present
+            svgClone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+            const source = serializer.serializeToString(svgClone);
+            const blob = new Blob([source], { type: 'image/svg+xml;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+
             const link = document.createElement('a');
-            link.href = canvas.toDataURL('image/png');
-            link.download = 'drawing.png';
+            link.href = url;
+            link.download = 'drawing.svg';
+            document.body.appendChild(link);
             link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
         });
     </script>
 </body>
