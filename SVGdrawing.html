@@ -53,7 +53,10 @@
         <button id="downloadBtn">Download</button>
     </div>
 
-    <svg id="svgCanvas" xmlns="http://www.w3.org/2000/svg" width="800" height="600"></svg>
+    <svg id="svgCanvas" xmlns="http://www.w3.org/2000/svg" width="800" height="600">
+        <rect id="boundary" x="0" y="0" width="800" height="600" fill="white" stroke="#333" stroke-width="2"></rect>
+        <g id="shapes"></g>
+    </svg>
 
     <script>
         const svg = document.getElementById('svgCanvas');
@@ -67,15 +70,24 @@
         let circleCount = 0;
         let isDrawing = false;
 
-        // add circle at given coordinates
+        const shapes = document.getElementById('shapes');
+
+        // add circle at given coordinates (clamped to boundary)
         function addCircleAt(x, y) {
             const r = Math.max(1, parseInt(brushSize.value, 10) * 2);
+            const svgW = parseInt(svg.getAttribute('width'), 10) || svg.clientWidth;
+            const svgH = parseInt(svg.getAttribute('height'), 10) || svg.clientHeight;
+
+            // clamp so circle stays fully inside boundary
+            const cx = Math.max(r, Math.min(x, svgW - r));
+            const cy = Math.max(r, Math.min(y, svgH - r));
+
             const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-            circle.setAttribute('cx', x);
-            circle.setAttribute('cy', y);
+            circle.setAttribute('cx', cx);
+            circle.setAttribute('cy', cy);
             circle.setAttribute('r', r);
             circle.setAttribute('fill', colorPicker.value);
-            svg.appendChild(circle);
+            shapes.appendChild(circle);
 
             circleCount += 1;
             circleCountEl.textContent = circleCount;
@@ -108,12 +120,13 @@
 
         // add circle button (also allows manual circle addition)
         addCircleBtn.addEventListener('click', () => {
-            // add at center
-            addCircleAt(Math.round(svg.clientWidth / 2), Math.round(svg.clientHeight / 2));
+            const svgW = parseInt(svg.getAttribute('width'), 10) || svg.clientWidth;
+            const svgH = parseInt(svg.getAttribute('height'), 10) || svg.clientHeight;
+            addCircleAt(Math.round(svgW / 2), Math.round(svgH / 2));
         });
 
         clearBtn.addEventListener('click', () => {
-            while (svg.firstChild) svg.removeChild(svg.firstChild);
+            while (shapes.firstChild) shapes.removeChild(shapes.firstChild);
             circleCount = 0;
             circleCountEl.textContent = circleCount;
         });
