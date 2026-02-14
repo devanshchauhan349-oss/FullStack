@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Experiment - Person Class Hierarchy</title>
+
+  <!-- React CDN -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      padding: 40px;
+      background: linear-gradient(to right, #f9f9f9, #e6f7ff);
+      font-family: "Segoe UI", sans-serif;
+    }
+
+    .app {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      max-width: 700px;
+      margin: auto;
+    }
+
+    h1 {
+      margin-bottom: 25px;
+      color: #222;
+    }
+
+    .card {
+      border-radius: 10px;
+      width: 320px;
+      margin: 20px auto;
+      padding: 20px;
+      color: white;
+      box-shadow: 0 6px 10px rgba(0,0,0,0.15);
+      text-align: left;
+      transition: transform 0.2s ease;
+    }
+
+    .card:hover {
+      transform: scale(1.05);
+    }
+
+    .person-card {
+      background: #ff6f61; /* coral red */
+    }
+
+    .student-card {
+      background: #4caf50; /* green */
+    }
+
+    .teacher-card {
+      background: #2196f3; /* blue */
+    }
+
+    .card h2 {
+      margin-top: 0;
+      font-size: 1.3em;
+    }
+
+    .card p {
+      margin: 6px 0;
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    // Base class
+    class Person {
+      constructor(name, age) {
+        this.name = name;
+        this.age = age;
+      }
+      getDetails() {
+        return `${this.name}, Age: ${this.age}`;
+      }
+    }
+
+    // Student inherits Person
+    class Student extends Person {
+      constructor(name, age, major) {
+        super(name, age);
+        this.major = major;
+      }
+      getDetails() {
+        return `${super.getDetails()}, Major: ${this.major}`;
+      }
+    }
+
+    // Teacher inherits Person
+    class Teacher extends Person {
+      constructor(name, age, subject) {
+        super(name, age);
+        this.subject = subject;
+      }
+      getDetails() {
+        return `${super.getDetails()}, Teaches: ${this.subject}`;
+      }
+    }
+
+    function App() {
+      const person = new Person("Raj", 30);
+      const student = new Student("Dev", 20, "Computer Science");
+      const teacher = new Teacher("Josh", 45, "Mathematics");
+
+      return (
+        <div className="app">
+          <h1>Person Class Hierarchy</h1>
+
+          <div className="card person-card">
+            <h2>{person.name} (Person)</h2>
+            <p>Age: {person.age}</p>
+            <p>Hello, my name is {person.name}.</p>
+          </div>
+
+          <div className="card student-card">
+            <h2>{student.name} (Student)</h2>
+            <p>Age: {student.age}</p>
+            <p>Hello, my name is {student.name} and I'm studying {student.major}.</p>
+            <p><strong>Major:</strong> {student.major}</p>
+          </div>
+
+          <div className="card teacher-card">
+            <h2>{teacher.name} (Teacher)</h2>
+            <p>Age: {teacher.age}</p>
+            <p>Hello, my name is {teacher.name} and I teach {teacher.subject}.</p>
+            <p><strong>Teaching:</strong> {teacher.subject}</p>
+          </div>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById("root"));
+    root.render(<App />);
+  </script>
+</body>
+</html>
