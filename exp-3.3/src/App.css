@@ -1,0 +1,48 @@
+.app-container {
+  text-align: center;
+  font-family: Arial, sans-serif;
+  padding: 30px;
+  background: linear-gradient(to right, #f9f9f9, #e6f7ff);
+}
+
+h1 {
+  margin-bottom: 25px;
+  color: #222;
+}
+
+.card {
+  border-radius: 10px;
+  width: 320px;
+  margin: 20px auto;
+  padding: 20px;
+  color: white;
+  box-shadow: 0 6px 10px rgba(0,0,0,0.15);
+  text-align: left;
+  transition: transform 0.2s ease;
+}
+
+.card:hover {
+  transform: scale(1.05);
+}
+
+/* Specific colors for each role */
+.person-card {
+  background: #ff6f61; /* coral red */
+}
+
+.student-card {
+  background: #4caf50; /* green */
+}
+
+.teacher-card {
+  background: #2196f3; /* blue */
+}
+
+.card h2 {
+  margin-top: 0;
+  font-size: 1.3em;
+}
+
+.card p {
+  margin: 6px 0;
+}
