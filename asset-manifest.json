@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/FullStack/static/css/main.869e7cb4.css",
+    "main.js": "/FullStack/static/js/main.99c87e41.js",
+    "static/js/453.37e01942.chunk.js": "/FullStack/static/js/453.37e01942.chunk.js",
+    "index.html": "/FullStack/index.html",
+    "main.869e7cb4.css.map": "/FullStack/static/css/main.869e7cb4.css.map",
+    "main.99c87e41.js.map": "/FullStack/static/js/main.99c87e41.js.map",
+    "453.37e01942.chunk.js.map": "/FullStack/static/js/453.37e01942.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.869e7cb4.css",
+    "static/js/main.99c87e41.js"
+  ]
+}
