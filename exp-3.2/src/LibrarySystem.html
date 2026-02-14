@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Experiment - Library Management System</title>
+
+  <!-- React CDN -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      padding: 40px;
+      background: #f6f8fb;
+      font-family: "Segoe UI", sans-serif;
+    }
+
+    .app {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      max-width: 600px;
+      margin: auto;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .search-bar, form {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      width: 100%;
+      justify-content: center;
+    }
+
+    input {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      flex: 1;
+    }
+
+    button {
+      padding: 10px 15px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button[type="submit"] {
+      background-color: #007bff;
+      color: white;
+    }
+
+    .remove {
+      background-color: #dc3545;
+      color: white;
+      margin-left: 10px;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      width: 100%;
+    }
+
+    li {
+      background: white;
+      padding: 12px;
+      margin-bottom: 10px;
+      border-radius: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    function SearchBar({ setSearchTerm }) {
+      return (
+        <div className="search-bar">
+          <input
+            type="text"
+            placeholder="Search books..."
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+      );
+    }
+
+    function BookForm({ addBook }) {
+      const [title, setTitle] = React.useState("");
+      const [author, setAuthor] = React.useState("");
+
+      const handleSubmit = (e) => {
+        e.preventDefault();
+        if (title.trim() && author.trim()) {
+          addBook({ title, author });
+          setTitle("");
+          setAuthor("");
+        }
+      };
+
+      return (
+        <form onSubmit={handleSubmit}>
+          <input
+            type="text"
+            placeholder="Book Title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+          />
+          <input
+            type="text"
+            placeholder="Author"
+            value={author}
+            onChange={(e) => setAuthor(e.target.value)}
+          />
+          <button type="submit">Add Book</button>
+        </form>
+      );
+    }
+
+    function BookList({ books, removeBook }) {
+      return (
+        <ul>
+          {books.map((book, index) => (
+            <li key={index}>
+              <span>{book.title} by {book.author}</span>
+              <button className="remove" onClick={() => removeBook(index)}>Remove</button>
+            </li>
+          ))}
+        </ul>
+      );
+    }
+
+    function App() {
+      const [books, setBooks] = React.useState([
+        { title: "The Great Gatsby", author: "F. Scott Fitzgerald" },
+        { title: "To Kill a Mockingbird", author: "Harper Lee" },
+        { title: "1984", author: "George Orwell" },
+        { title: "Pride and Prejudice", author: "Jane Austen" }
+      ]);
+
+      const [searchTerm, setSearchTerm] = React.useState("");
+
+      const addBook = (book) => {
+        const exists = books.some(
+          (b) =>
+            b.title.toLowerCase() === book.title.toLowerCase() &&
+            b.author.toLowerCase() === book.author.toLowerCase()
+        );
+        if (!exists) {
+          setBooks([...books, book]);
+        } else {
+          alert("This book already exists!");
+        }
+      };
+
+      const removeBook = (index) => {
+        const updatedBooks = books.filter((_, i) => i !== index);
+        setBooks(updatedBooks);
+      };
+
+      const filteredBooks = books.filter(
+        (book) =>
+          book.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          book.author.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+
+      return (
+        <div className="app">
+          <h1>📚 Library Management System</h1>
+          <SearchBar setSearchTerm={setSearchTerm} />
+          <BookForm addBook={addBook} />
+          <BookList books={filteredBooks} removeBook={removeBook} />
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById("root"));
+    root.render(<App />);
+  </script>
+</body>
+</html>
