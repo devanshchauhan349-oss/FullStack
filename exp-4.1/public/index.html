@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Seat Booking System</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    table { border-collapse: collapse; width: 60%; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 10px; text-align: center; }
+    button { margin: 5px; padding: 5px 10px; }
+    #message { margin-top: 15px; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h1>🎟️ Seat Booking System</h1>
+  <div id="message"></div>
+  <table id="seatsTable">
+    <thead>
+      <tr><th>Seat Number</th><th>Status</th><th>Actions</th></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    async function loadSeats() {
+      const res = await fetch("/seats");
+      const seats = await res.json();
+      const tbody = document.querySelector("#seatsTable tbody");
+      tbody.innerHTML = "";
+      seats.forEach(seat => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${seat.seatNumber}</td>
+          <td>${seat.status}</td>
+          <td>
+            <button onclick="bookSeat(${seat.seatNumber})">Book</button>
+            <button onclick="cancelSeat(${seat.seatNumber})">Cancel</button>
+          </td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    async function bookSeat(seatNumber) {
+      const res = await fetch("/book", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ seatNumber })
+      });
+      const data = await res.json();
+      document.getElementById("message").innerText = data.message;
+      loadSeats();
+    }
+
+    async function cancelSeat(seatNumber) {
+      const res = await fetch("/cancel", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ seatNumber })
+      });
+      const data = await res.json();
+      document.getElementById("message").innerText = data.message;
+      loadSeats();
+    }
+
+    loadSeats();
+  </script>
+</body>
+</html>
