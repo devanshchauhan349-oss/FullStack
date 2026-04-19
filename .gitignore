@@ -1,0 +1,14 @@
+# Node modules
+node_modules/
+client/node_modules/
+server/node_modules/
+auth-rbac-project/server/node_modules/
+auth-rbac-project/client/node_modules/
+
+# Environment
+.env
+.env.local
+
+# Build folders
+client/dist/
+server/dist/
