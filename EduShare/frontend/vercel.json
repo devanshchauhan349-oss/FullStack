@@ -6,6 +6,6 @@
   "installCommand": "npm install",
   "framework": "create-react-app",
   "env": {
-    "REACT_APP_API_URL": "https://edushare-backend-wdnp.onrender.com"
+    "REACT_APP_API_URL": "https://collecting-sharing-resources-backen.vercel.app"
   }
 }

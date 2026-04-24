@@ -5,19 +5,34 @@ const jwt = require('jsonwebtoken');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const os = require('os');
 
 const app = express();
 
-const allowedOrigins = [
-  'http://localhost:3000',
-  'https://collecting-sharing-resources.vercel.app',
-  process.env.FRONTEND_URL
-].filter(Boolean);
+const allowedOrigins = new Set(
+  [
+    'http://localhost:3000',
+    'https://collecting-sharing-resources.vercel.app',
+    process.env.FRONTEND_URL
+  ].filter(Boolean)
+);
+
+const isAllowedOrigin = (origin) => {
+  if (!origin) return true;
+  if (allowedOrigins.has(origin)) return true;
+
+  try {
+    const { hostname, protocol } = new URL(origin);
+    return protocol === 'https:' && hostname.endsWith('.vercel.app');
+  } catch (error) {
+    return false;
+  }
+};
 
 // Middleware
 app.use(cors({
   origin(origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
+    if (isAllowedOrigin(origin)) {
       return callback(null, true);
     }
     return callback(new Error(`CORS blocked for origin: ${origin}`));
@@ -28,14 +43,20 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Create uploads folder
-const uploadDir = path.join(__dirname, 'uploads');
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
+const bundledUploadDir = path.join(__dirname, 'uploads');
+const runtimeUploadDir = process.env.VERCEL ? path.join(os.tmpdir(), 'edushare-uploads') : bundledUploadDir;
+
+if (!fs.existsSync(runtimeUploadDir)) {
+  fs.mkdirSync(runtimeUploadDir, { recursive: true });
 }
-app.use('/uploads', express.static(uploadDir));
+
+app.use('/uploads', express.static(runtimeUploadDir));
+if (runtimeUploadDir !== bundledUploadDir) {
+  app.use('/uploads', express.static(bundledUploadDir));
+}
 
 // Create a sample PDF file for testing
-const samplePdfPath = path.join(uploadDir, 'sample-javascript-guide.pdf');
+const samplePdfPath = path.join(bundledUploadDir, 'sample-javascript-guide.pdf');
 if (!fs.existsSync(samplePdfPath)) {
   const sampleContent = `JavaScript Guide - Sample Content
     
@@ -58,7 +79,7 @@ Download this file to test that your download is working properly!`;
 // Configure file upload
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, uploadDir);
+    cb(null, runtimeUploadDir);
   },
   filename: (req, file, cb) => {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
@@ -423,8 +444,10 @@ app.get('/api/download/:id', protect, (req, res) => {
   }
 
   if (resource.fileUrl) {
-    const cleanFileUrl = resource.fileUrl.replace(/^\/+/, '');
-    const filePath = path.join(__dirname, cleanFileUrl);
+      const cleanFileUrl = resource.fileUrl.replace(/^\/+/, '');
+      const runtimeFilePath = path.join(runtimeUploadDir, path.basename(cleanFileUrl));
+      const bundledFilePath = path.join(__dirname, cleanFileUrl);
+      const filePath = fs.existsSync(runtimeFilePath) ? runtimeFilePath : bundledFilePath;
 
     if (fs.existsSync(filePath)) {
       const fileName =
@@ -557,7 +580,7 @@ app.get('/api/test', (req, res) => {
     users: users.length,
     timestamp: new Date(),
     environment: process.env.NODE_ENV || 'development',
-    allowedOrigins
+    allowedOrigins: Array.from(allowedOrigins)
   });
 });
 
@@ -595,14 +618,18 @@ app.use('*', (req, res) => {
   res.status(404).json({ message: `Route ${req.originalUrl} not found` });
 });
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`\nEduShare Backend Running on port ${PORT}`);
-  console.log(`Local: http://localhost:${PORT}`);
-  console.log(`Test: http://localhost:${PORT}/api/test`);
-  console.log(`Allowed origins: ${allowedOrigins.join(', ')}`);
-  console.log(`\nDemo Accounts:`);
-  console.log(`Admin: admin@edushare.com / 123456`);
-  console.log(`Contributor: contributor@test.com / 123456`);
-  console.log(`Student: student@test.com / 123456`);
-});
+if (!process.env.VERCEL) {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => {
+    console.log(`\nEduShare Backend Running on port ${PORT}`);
+    console.log(`Local: http://localhost:${PORT}`);
+    console.log(`Test: http://localhost:${PORT}/api/test`);
+    console.log(`Allowed origins: ${Array.from(allowedOrigins).join(', ')}`);
+    console.log(`\nDemo Accounts:`);
+    console.log(`Admin: admin@edushare.com / 123456`);
+    console.log(`Contributor: contributor@test.com / 123456`);
+    console.log(`Student: student@test.com / 123456`);
+  });
+}
+
+module.exports = app;
