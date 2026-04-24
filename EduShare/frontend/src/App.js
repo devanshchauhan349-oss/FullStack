@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Link, useNavigate, useParams } from 'react-router-dom';
 
-// API Base URL - Uses environment variable for production
+// API Base URL - Uses environment variable for production, localhost for development
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 const styles = {
@@ -86,7 +86,7 @@ function Login() {
       if (response.ok && data.success) {
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
-        setMessage('✅ Login successful!');
+        setMessage('✅ Login successful! Redirecting...');
         setTimeout(() => {
           navigate('/');
           window.location.reload();
@@ -248,16 +248,12 @@ function Explore() {
           } else {
             alert('❌ File not found on server');
           }
-        } else {
-          alert('❌ No downloadable content available');
         }
         fetchResources();
-      } else {
-        alert('❌ Download failed');
       }
     } catch (error) {
       console.error('Download error:', error);
-      alert('❌ Download failed. Please try again.');
+      alert('❌ Download failed');
     }
   };
 
