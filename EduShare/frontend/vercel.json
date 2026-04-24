@@ -1,10 +1,13 @@
 {
-  "buildCommand": "npm run build",
-  "outputDirectory": "build",
-  "devCommand": "npm start",
-  "installCommand": "npm install",
-  "framework": "create-react-app",
-  "env": {
-    "REACT_APP_API_URL": "https://your-backend-url.onrender.com"
-  }
+    "experimentalServices": {
+        "frontend": {
+            "entrypoint": "frontend",
+            "routePrefix": "/",
+            "framework": "create-react-app"
+        },
+        "backend": {
+            "entrypoint": "backend",
+            "routePrefix": "/_/backend"
+        }
+    }
 }
