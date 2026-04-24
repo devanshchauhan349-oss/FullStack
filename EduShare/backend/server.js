@@ -529,6 +529,7 @@ app.use((err, req, res, next) => {
     });
 });
 
+
 // 404 handler
 app.use('*', (req, res) => {
     res.status(404).json({ message: `Route ${req.originalUrl} not found` });
@@ -544,3 +545,4 @@ app.listen(PORT, () => {
     console.log(`   Contributor: contributor@test.com / 123456`);
     console.log(`   Student: student@test.com / 123456`);
 });
+app.use(cors()); // This allows any website to call your API
